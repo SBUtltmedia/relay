@@ -16,7 +16,7 @@ import BrainStructure from './brainStructure';
  * @return {Project}
  */
 function getProjection (fieldASTs) {
-  return fieldASTs.selectionSet.selections.reduce((projections, selection) => {
+  return fieldASTs.reduce((projections, selection) => {
     projections[selection.name.value] = 1;
 
     return projections;
@@ -70,11 +70,10 @@ var schema = new GraphQLSchema({
             type: new GraphQLNonNull(GraphQLString)
           }
         },
-        resolve: (root, {name}, source, fieldASTs) => co(function *() {
+        resolve: (root, {name}, info) => co(function *() {
 
-          //var projections = getProjection(fieldASTs);
-          //return BrainStructure.findOne({name: name}, projections);
-          return yield BrainStructure.findOne({name: name});
+          var projections = getProjection(info.fieldASTs);
+          return yield BrainStructure.findOne({name: name}, projections);
         })
       }
     }
