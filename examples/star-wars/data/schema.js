@@ -70,11 +70,12 @@ var schema = new GraphQLSchema({
             type: new GraphQLNonNull(GraphQLString)
           }
         },
-        resolve: (root, {name}, source, fieldASTs) => {
+        resolve: (root, {name}, source, fieldASTs) => co(function *() {
 
-          var projections = getProjection(fieldASTs);
-          return BrainStructure.findOne({name: name}, projections);
-        }
+          //var projections = getProjection(fieldASTs);
+          //return BrainStructure.findOne({name: name}, projections);
+          return yield BrainStructure.findOne({name: name});
+        })
       }
     }
   })
